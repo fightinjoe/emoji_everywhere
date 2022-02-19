@@ -1,0 +1,118 @@
+/*
+ * Copyright 2018 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+ @keyframes sadRotation {
+  0% { transform: rotate(0deg); }
+  20% { transform: rotate(0deg); }
+  30% { transform: rotate(90deg); }
+  100% { transform: rotate(90deg); }
+}
+
+@keyframes popupAppear {
+  0% { transform: translateY(-20px); opacity: 0; visibility: hidden; }
+  1% { transform: translateY(-20px); opacity: 0; visibility: visible; }
+  100% { transform: translateY(0px); opacity: 1; visibility: visible; }
+}
+
+:root {
+  font-family: Roboto, sans-serif;
+
+  --light-grey: #EEE;
+}
+
+.popup {
+  position: absolute;
+  z-index: 9999;
+  overflow: hidden;
+  background-color: white;
+  border-radius: 4px;
+  border: 1px solid var(--light-grey);
+  padding: 0;
+  box-shadow: 0px 4px 4px 0px #3C40434D,
+              0px 8px 12px 6px #3C404326;
+  transform: translateY(20px);
+  opacity: 0;
+  visibility: hidden;
+
+  animation-duration: 200ms;
+}
+
+.popup.show {
+  animation-name: popupAppear;
+  font-size: 16px;
+  transform: translateY(0px);
+  opacity: 1;
+  visibility: visible;
+}
+
+.emojis {
+  margin: 0;
+  padding: 0;
+  max-height: calc(4.5 * 46px);
+  overflow: scroll;
+  z-index: 100;
+  position: relative;
+}
+
+.emoji {
+  display: flex;
+  align-items: center;
+  line-height: 38px;
+  padding: 4px 12px;
+  width: 300px;
+  cursor: pointer;
+}
+
+.emoji.sel {
+  /* background: rgba(0,0,0,0.1); */
+}
+
+.emoji span {
+  display: inline-block;
+}
+
+.emoji span:first-child {
+  margin: 0 16px 0 8px;
+  flex-grow: 0;
+  font-size: 24px;
+}
+
+.emoji span:last-child {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.emoji.empty span:first-child {
+  animation: sadRotation 10s forwards;
+  transform: rotate(90deg);
+}
+
+.highlight {
+  background: var(--light-grey);
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 46px;
+  width: 100%;
+  z-index: 10;
+}
+
+.emoji.emoticon span:first-child {
+  font-size: 14px;
+  width: 19ex;
+  text-align: center;
+}

@@ -1,0 +1,83 @@
+/*
+ * Copyright 2018 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+ 
+ :root {
+  --yellow: #FFE732;
+  --light: #FADCBC;
+  --medium-light: #E0BB95;
+  --medium: #BF8F68;
+  --medium-dark: #9B643D;
+  --dark: #594539;
+}
+
+body {
+  padding: 16px 24px 24px 24px;
+}
+
+h1 {
+  font-family: 'Google Sans', sans-serif;
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 24px;
+}
+
+h2 {
+  font-family: 'Google Sans', sans-serif;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 24px;
+  letter-spacing: 0.1px;
+  text-align: left;
+}
+
+p {
+  font-family: Roboto, sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: 0.2px;
+}
+
+ul, li {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.colors {
+  display: flex;
+}
+
+.colors button {
+  width: 24px;
+  height: 24px;
+  border: 0;
+  border-radius: 12px;
+  margin-right: 8px;
+  border: 2px solid White;
+}
+
+.colors button.sel {
+  box-shadow: 0 0px 6px rgb(0,0,0,0.50);
+}
+
+.colors button[data-color="yellow"] { background-color: var(--yellow); }
+.colors button[data-color="light"] { background-color: var(--light); }
+.colors button[data-color="medium-light"] { background-color: var(--medium-light); }
+.colors button[data-color="medium"] { background-color: var(--medium); }
+.colors button[data-color="medium-dark"] { background-color: var(--medium-dark); }
+.colors button[data-color="dark"] { background-color: var(--dark); }
