@@ -19,7 +19,7 @@ const emojiPopupEvent = new Event('emoji-popup', { bubbles: true});
 
 // initializes the event handler that listens for the ":" to
 // be typed
-const initKeyup = ()=>{
+const initKeydown = ()=>{
   // add event dispatch whenever ":" is typed
   document
     .querySelector(':root')
@@ -70,7 +70,7 @@ const initTemplate = () => {
 let popup = null;
 
 export const main = () => {
-  initKeyup();
+  initKeydown();
 
   initTemplate();
 

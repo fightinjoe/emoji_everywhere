@@ -330,6 +330,12 @@ export default class Popup {
       // The skintone unicode modifier
       const skintone = result.color;
 
+      // User entered text string to search by
+      const filterRegex = new RegExp(
+        this.filterCache.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, '\\$&'),
+        "i"
+      );
+
       let emojis = this.filterCache.length === 0
         // When there's nothing to filter, show the history and top emojis, limited to 15
         ? [ ...result.history, ...EMOJIS.slice(0,15)]
@@ -337,7 +343,7 @@ export default class Popup {
         // When there is text to filter by, choose the emojis that match the filter
         // either by name or by keyword, limiting to 15
         : EMOJIS
-            .filter( e => ( e.name.match( this.filterCache ) || e.keywords.match( this.filterCache ) ) )
+            .filter( e => ( e.name.match( filterRegex ) || e.keywords.match( filterRegex ) ) )
             .slice(0,15);
 
       // Update the emojis shown inside the popup
@@ -384,7 +390,7 @@ export default class Popup {
         data-name="${ emoji.name }"
         data-emoji="${ emojiHex }">
           <span>${ emojiHex }</span>
-          <span>:${ emoji.name }:</span>
+          <span>:${ emoji.name }</span>
       </li>
     `
   }
