@@ -258,13 +258,19 @@ export default class Popup {
   //              describing the emoji represented by the node
   _insert = node => {
 
-    let text = [node.dataset.emoji];
-
-    this.textField.insert( text, this.filterCache.length );
+    let text = node.dataset.emoji;
 
     let emoji = EMOJIS.find( e => (e.name === node.dataset.name) );
-    // Do not add EMOTICONS to the history
-    if( emoji ) this._appendEmojiHistory( emoji );
+
+    if( emoji ) {
+      this.textField.insert( text, this.filterCache.length );
+      this._appendEmojiHistory( emoji );
+    } else {
+      // If the emoji lookup fails, then it is an emoticon that is being inserted.
+      // In this case, do not add to the history, and pad the length to account for
+      // the "::" trigger string
+      this.textField.insert( text, this.filterCache.length, "is emoticon" );
+    }
   }
 
   _initializePopup = () => {

@@ -268,17 +268,15 @@ class TextField {
 
   // Inserts the text, overwriting the previous "padding" count of letters.
   // Used, for example, to overwrite ":thumb" with the thumbs up emoji
-  insert = (text, padding) => {
+  insert = (text, padding, isEmoticon ) => {
     switch( this.type ) {
-      case 'input':           this._insertInput( text, padding ); break;
-      case 'contenteditable': this._insertCE( text, padding ); break;
+      case 'input':           this._insertInput( text, padding, isEmoticon ); break;
+      case 'contenteditable': this._insertCE( text, padding, isEmoticon ); break;
       default: console.log("🤣 Didn't insert anything", this.type);
     }
   }
 
-  _insertInput = (text, padding) => {
-    let start = this.element.selectionStart;
-    
+  _insertInput = (text, padding, isEmoticon) => {
     if ( this.element.selectionStart || this.element.selectionStart == '0' ) {
       const currentText = this.element.value;
       
@@ -295,23 +293,37 @@ class TextField {
         currentText.substring(0, start) +
         text +
         currentText.substring(end, currentText.length);
-    }
 
-    // Set the correct focus and range
-    this.element.focus();
-    this.element.setSelectionRange(start, start);
+      const caretOffset = start + text.length;
+
+      // Set the correct focus and range
+      this.element.focus();
+      this.element.setSelectionRange(caretOffset, caretOffset);
+
+    }
   }
 
-  _insertCE = (text, padding) => {
+  _insertCE = (text, padding, isEmoticon) => {
     const textNode = document.createTextNode(text);
     
+    // The trigger for Emoticons is "::", so set the offset to 2
+    const triggerOffset = isEmoticon ? 2 : 1;
+    
+    // Shift the cursor the number of characters in the emoticon. Otherwise,
+    // shift by 1
+    const caretOffset = isEmoticon ? textNode.length : 1;
+
     if(this.rangeCache) {
       this.element.focus();
       
       // create deletion range
       const range = document.createRange();
-      range.setStart( this.rangeCache.startContainer, this.rangeCache.startOffset - 1 );
-      range.setEnd( this.rangeCache.startContainer, this.rangeCache.startOffset + padding );
+      range.setStart( this.rangeCache.startContainer, this.rangeCache.startOffset - triggerOffset );
+
+      range.setEnd(
+        this.rangeCache.startContainer,
+        Math.min(this.rangeCache.startOffset + padding, this.rangeCache.endOffset)
+      );
 
       var sel = window.getSelection();
       sel.removeAllRanges();
@@ -323,9 +335,11 @@ class TextField {
 
       // create range to set cursor position
       sel.removeAllRanges();
-      range.setStart( textNode, 1 );
-      range.setEnd( textNode, 1 );
+      range.setStart( textNode, caretOffset );
+      range.setEnd( textNode, caretOffset );
       sel.addRange(range);
+
+      this.element.focus()
     }
   }
 
