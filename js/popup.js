@@ -150,10 +150,12 @@ export default class Popup {
 
   /*== Public methods ==*/
 
-  show = (textField)=> {
-    // Register the currently focused textfield
-    this.textField = new TextField(textField);
+  show = (target)=> {
+    this.textField = new TextField(target);
 
+    // Don't show if the insertion point doesn't support a popup
+    if( !this.textField.isValidInsertionPoint() ) return;
+    
     // Add event handlers for keypresses and clicks
     this._addEventHandlers();
 

@@ -32,7 +32,7 @@ const initKeyup = ()=>{
 }
 
 // Event handler
-const handleKeyup = (event)=>{
+const handleKeydown = (event)=>{
   const target = event.target;
 
   // Check to make sure the even target is valid (i.e. an
@@ -79,7 +79,7 @@ export const main = () => {
   // handle the emoji-popup event
   document
     .querySelector(':root')
-    .addEventListener('emoji-popup', handleKeyup);
+    .addEventListener('emoji-popup', handleKeydown);
 
   console.log('🤣 Emoji Everywhere successfully loaded');
 }

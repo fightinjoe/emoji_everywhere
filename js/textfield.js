@@ -23,7 +23,7 @@ class TextField {
     if( element.selectionEnd ) this.type = 'input'; // behaves same as textarea
     if( element.getAttribute('contenteditable') ) this.type = 'contenteditable';
 
-    this.rangeCache = null;
+    this._cacheRange();
   }
 
   // Returns { top, left } relative to window
@@ -191,7 +191,7 @@ class TextField {
 
   // Returns { top, left }
   _getCaretPositionCE = () => {
-    this._cacheRange();
+    // this._cacheRange();
 
     let top = 0, left = 0;
 
@@ -225,13 +225,54 @@ class TextField {
 
   /*=== Inserting values ===*/
   
+  isValidInsertionPoint = () => {
+    switch( this.type ) {
+      case 'input':
+        return this._isValidInputInsertionPoint();
+      case 'contenteditable':
+        return this._isValidCEInsertionPoint();
+      default:
+        console.log(`🤣 Unknown type "${ this.type }", assuming insertion point is invalid`);
+        return false;
+    }
+  }
+
+  _isValidInputInsertionPoint = () => {
+    const selStart = this.element.selectionStart;
+
+    // It's valid to insert an emoji at the very beginning of the text field
+    if( selStart <= 1 ) return true;
+
+    const prevChar = this.element.value.substring(selStart-2, selStart-1);
+
+    // It's valid to insert an emoji after any whitespace
+    return prevChar.match(/\s/) ? true : false;
+  }
+
+  _isValidCEInsertionPoint = () => {
+    if( this.rangeCache ) {
+      // If the range is at the very beginning, then return tru
+      if( this.rangeCache.startOffset <= 1 ) return true;
+
+      const prevCharRange = document.createRange();
+
+      prevCharRange.setStart( this.rangeCache.startContainer, this.rangeCache.startOffset - 2);
+      prevCharRange.setEnd( this.rangeCache.startContainer, this.rangeCache.startOffset - 1);
+
+      const prevChar = prevCharRange.toString();
+
+      // If the single character preceeding the insertion point is whitespace, then return true;
+      return prevChar.match(/\s/) ? true : false;
+    }
+  }
+
   // Inserts the text, overwriting the previous "padding" count of letters.
   // Used, for example, to overwrite ":thumb" with the thumbs up emoji
   insert = (text, padding) => {
     switch( this.type ) {
       case 'input':           this._insertInput( text, padding ); break;
       case 'contenteditable': this._insertCE( text, padding ); break;
-      default: console.log("Didn't insert anything", this.type);
+      default: console.log("🤣 Didn't insert anything", this.type);
     }
   }
 
@@ -264,7 +305,7 @@ class TextField {
   _insertCE = (text, padding) => {
     const textNode = document.createTextNode(text);
     
-    if (this.rangeCache) {
+    if(this.rangeCache) {
       this.element.focus();
       
       // create deletion range
