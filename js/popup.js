@@ -40,6 +40,10 @@ export default class Popup {
     // keyboard + mouse input collisions
     this.acceptMouseInput = false;
 
+    // Flag to keeping track of whether a modifier key like Alt or Meta is
+    // depressed, in which case a backspace deletes more than just one character
+    this.modifierKey = false;
+
     this._initializePopup();
     
     this._initializeEmojiHistory();
@@ -131,6 +135,14 @@ export default class Popup {
     return false;
   }
 
+  _captureModifier = (event) => {
+    if( ['Alt','Meta'].includes(event.key) ) this.modifierKey = event.key;
+  }
+
+  _releaseModifier = (event) => {
+    if( ['Alt','Meta'].includes(event.key) ) this.modifierKey = false;
+  }
+
   // If the click is out of bounds of the popup, dismiss the popup
   _handleOOBClick = (event) => {
     if( !this.popupElt.contains( event.target ) ) return this.hide();
@@ -138,12 +150,16 @@ export default class Popup {
 
   _addEventHandlers = () => {
     const root = document.querySelector(':root')
+    root.addEventListener( 'keydown', this._captureModifier );
+    root.addEventListener( 'keyup', this._releaseModifier );
     root.addEventListener( 'keydown', this._captureKeyboard, {capture:true} );
     root.addEventListener( 'click', this._handleOOBClick, {once:true} );
   }
 
   _removeEventHandlers = () => {
     const root = document.querySelector(':root')
+    root.removeEventListener( 'keydown', this._captureModifier );
+    root.removeEventListener( 'keyup', this._releaseModifier );
     root.removeEventListener( 'keydown', this._captureKeyboard, {capture:true} );
     root.removeEventListener( 'mousemove', this._enableMouseInput )
   }
@@ -420,7 +436,23 @@ export default class Popup {
   _backspaceFilterCache = () => {
     if( this.filterCache.length === 0 ) return this.hide();
 
-    this.filterCache = this.filterCache.substr(0, this.filterCache.length-1);
+    // Meta + Backspace removes the full line
+    if( this.modifierKey === 'Meta' ) {
+      this.filterCache = '';
+      return this.hide();
+    }
+
+    // Alt + Backspace removes a single word
+    if( this.modifierKey === 'Alt' ) {
+      let filterWords = this.filterCache.split(' ');
+      this.filterCache = filterWords.slice(0, filterWords.length-1).join(' ')
+    }
+
+    // When there is no modifier key, only remove the last letter from the filter cache
+    if( !this.modifierKey ) {
+      this.filterCache = this.filterCache.substr(0, this.filterCache.length-1);
+    }
+
     this._renderEmojiList();
   }
 
